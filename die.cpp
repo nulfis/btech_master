@@ -23,6 +23,7 @@ int dice_roll(){
 
 }
 
+/*
 //hit lookup table: front/rear
 std::map<int, std::string> generate_lookup_table_fr(){
     std::map<int, std::string> hit_table;
@@ -76,7 +77,7 @@ std::map<int, std::string> generate_lookup_table_r(){
 
     return hit_table;
 }
-
+*/
 
 
 
