@@ -21,10 +21,11 @@ int attack_calc(){
    int range;
    int attack_sum;
 
-   std::cout << "Input your G.A.T.O.R values, G to R order with spaces between values.\n\n";
+   /*std::cout << "Input your G.A.T.O.R values, G to R order with spaces between values.\n\n";
    std::cin >> gunnery >> attack_mod >> target_mod >> other_mod >> range;
-    attack_sum = gunnery + attack_mod + target_mod + other_mod + range;
-    std::cout << "Your targer number modifier is: " << attack_sum << "\n\n";
+   attack_sum = gunnery + attack_mod + target_mod + other_mod + range; */ // removed while testing weapon hits 1.19.26
+   attack_sum = 4;
+   std::cout << "Your targer number modifier is: " << attack_sum << "\n\n";
     return attack_sum; 
 
    
@@ -104,6 +105,13 @@ int main(){
         if (user_roll >= to_hit) {
             std::cout << "HIT!" << endl;
             cout << "Rolling to determine hit location" << endl;
+            if (weapon_a.dmg_type == "MCS"){ //check for missile weapon
+                int cluster_roll = dice_roll(); //roll for cluster table lookup
+                int hits = Cluster_Table::get_hits(cluster_roll, Weapon_Size_Column::C4);
+                cout << hits << " missiles hit the target" << endl;
+                return 0; //exit the program while I'm testing missile hits
+            
+            }
             user_roll = dice_roll();
             //user_roll = 12; //testing by hard setting hit location to 12
             std::string hit_location = hit_table_fr[user_roll]; //find the roll on the hit location table
