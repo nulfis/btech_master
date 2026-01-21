@@ -111,17 +111,17 @@ int main(){
                 int hits = Cluster_Table::get_hits(cluster_roll, Weapon_Size_Column::C10);
                 cout << hits << " missiles hit the target" << endl;
                 
-                int c_group = 5; //build a function call here to get it from class
-                int full_groups = hits/c_group;
+                //int c_group = 5; //build a function call here to get it from class
+                int full_groups = hits / weapon_a.grouping;
                 
                 while (full_groups > 0){
-                    temp_dmg = c_group * weapon_a.dmg;
+                    temp_dmg = weapon_a.grouping * weapon_a.dmg;
                     dmg_alloc(hit_table_fr, temp_dmg, lance[0]);
                     full_groups -= 1;
                 }
                 
-                if (hits % c_group > 0){
-                temp_dmg = (hits % c_group) * weapon_a.dmg; //here we take modulo to get remainder in the last group and directly multiply it by the missile damage
+                if (hits % weapon_a.grouping > 0){
+                temp_dmg = (hits % weapon_a.grouping) * weapon_a.dmg; //here we take modulo to get remainder in the last group and directly multiply it by the missile damage
                 dmg_alloc(hit_table_fr, temp_dmg, lance[0]);
                 }
                 
