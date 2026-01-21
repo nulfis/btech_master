@@ -5,7 +5,7 @@
 
 int dice_roll(){
 
-    srand((unsigned int) time(NULL)); //time returns current time with a type-cast to what srand wants
+    
 
     int roll_1 = 0;
     int roll_2 = 0;

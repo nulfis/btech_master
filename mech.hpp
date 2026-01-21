@@ -59,6 +59,7 @@ class Weapon { //container for mech weapons
 
     public:
     std::string dmg_type;
+    std::string grouping;
     std::vector<int> weapon_vals;
     void populate_weapon_vals(sqlite3* db, std::string weapon_choice);
     int dmg; //moved to public variable for testing with
@@ -68,6 +69,8 @@ class Weapon { //container for mech weapons
 
 };
 
+
+void dmg_alloc(std::map<int, std::string> hit_table, int weapon_dmg, Mech target_mech);
 
 //sqlite3 functions
 sqlite3* openDB(); 

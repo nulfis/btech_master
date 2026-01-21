@@ -103,14 +103,15 @@ void Weapon::populate_weapon_vals(sqlite3* db, std::string weapon_choice){ //in 
         
         heat = sqlite3_column_int(stmt, 1);
         dmg = sqlite3_column_int(stmt, 2);
-        const unsigned char* dmg_type_raw = sqlite3_column_text(stmt, 3);
+        grouping = sqlite3_column_int(stmt, 3);
+        const unsigned char* dmg_type_raw = sqlite3_column_text(stmt, 4);
         dmg_type = reinterpret_cast<const char*>(dmg_type_raw);
-        min_range = sqlite3_column_int(stmt, 4);
-        sht_range = sqlite3_column_int(stmt, 5);
-        med_range = sqlite3_column_int(stmt, 6);
-        lng_range = sqlite3_column_int(stmt, 7);
-        crit_slots = sqlite3_column_int(stmt, 8);
-        shots_per_ton = sqlite3_column_int(stmt, 9); 
+        min_range = sqlite3_column_int(stmt, 5);
+        sht_range = sqlite3_column_int(stmt, 6);
+        med_range = sqlite3_column_int(stmt, 7);
+        lng_range = sqlite3_column_int(stmt, 8);
+        crit_slots = sqlite3_column_int(stmt, 9);
+        shots_per_ton = sqlite3_column_int(stmt, 10); 
     } else {
        std::cout << "Your SQL query has an issue" << std::endl;
     }    
@@ -154,7 +155,38 @@ sqlite3* openDB() {
     return db;
 }
 
-//callback function for sqlite3_exec()
+
+
+void dmg_alloc(std::map<int, std::string> hit_table, int weapon_dmg, Mech target_mech){ //damage allocation logic for mech armor and structure
+//check the hit location against weapon damage, if armor count goes negative, go to structure
+    int roll_result = dice_roll();
+    std::string  hit_location= hit_table[roll_result]; //find the roll on the hit location table
+
+    std::cout << "hit location is " << hit_location << " : " << target_mech.ArmorMap[hit_location] << " total armor" << 
+    " | Wpn Dmg:" << weapon_dmg << std::endl; //print where the hit occurred and the damage to be done
+    
+    if (target_mech.ArmorMap[hit_location] > weapon_dmg) {
+    target_mech.ArmorMap[hit_location] -= weapon_dmg; //grab the weapon damage from the weapon class
+    std::cout << "Remaining armor at " << hit_location << " : " << target_mech.ArmorMap[hit_location] << std::endl;
+    } else {
+        int remainder = weapon_dmg - target_mech.ArmorMap[hit_location];
+        target_mech.StrucMap[hit_location] -= remainder; 
+        target_mech.ArmorMap[hit_location] = 0;
+        std::cout << "Remaining armor at " << hit_location << " : " << target_mech.ArmorMap[hit_location] << std::endl;
+        std::cout << "Remaining struc at " << hit_location << " : " << target_mech.StrucMap[hit_location] << std::endl;
+        //check for destroyed mech sections, is mech destroyed, continued damage into interior parts
+    if (target_mech.StrucMap[hit_location] <= 0) {
+        if (hit_location == "CT") {
+            std::cout << "mech is destroyed" << std::endl;
+        } else {
+            std::cout << hit_location << " is destroyed" << std::endl;
+            remainder = target_mech.StrucMap[hit_location]; //new remainder to track damage into interior sections 
+        }
+    }
+    }
+}
+
+//callback function for sqlite3_exec() THIS CAN BE REMOVED
 int callback(void* mech_data, int argc, char** argv, char** azColName){ //(user spec data type, columns, string array for values in row, col names array)
     std::vector<int>* vec = static_cast<std::vector<int>*>(mech_data);
 

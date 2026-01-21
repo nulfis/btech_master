@@ -31,9 +31,8 @@ int attack_calc(){
    
 }
 
-
-
 int main(){
+    srand((unsigned int) time(NULL)); //time returns current time with a type-cast to what srand wants
     bool quit = false;
     system("clear");
     system("color 09");
@@ -80,8 +79,9 @@ int main(){
     
     //pick a weapon to fire at the selected mech
     std::string weapon_choice;
-    cout << "what weapon are you shooting?" << endl;
-    cin >> weapon_choice;
+    //cout << "what weapon are you shooting?" << endl;
+    //cin >> weapon_choice; 
+    weapon_choice = "LRM10"; //hardcoded selection here for testing purposes, commented out two lines above
     cout << "populating weapon values for user selection" << endl;
     weapon_a.populate_weapon_vals(odb, weapon_choice); //currently hard coded for PPC lookup
     weapon_a.debug_weapon_vals(); //prints all the values except crit slots and shots per ton
@@ -95,51 +95,44 @@ int main(){
     //the mech shoots itself right now with the weapon chosen. Once I add multiple mech tracking this needs to switch over.
     while (quit != true) {
         char user_input;
-        int user_roll;
+
         
         cout << "rolling dice for player \n";
-        user_roll = dice_roll(); //roll the dice
+        int to_hit_roll = dice_roll(); //roll the dice
         int to_hit = attack_calc(); //sum the gator vals to determine to hit number
         
         //check if you hit or miss 
-        if (user_roll >= to_hit) {
+        if (to_hit_roll >= to_hit) {
             std::cout << "HIT!" << endl;
             cout << "Rolling to determine hit location" << endl;
             if (weapon_a.dmg_type == "MCS"){ //check for missile weapon
+                int temp_dmg{};
                 int cluster_roll = dice_roll(); //roll for cluster table lookup
-                int hits = Cluster_Table::get_hits(cluster_roll, Weapon_Size_Column::C4);
+                int hits = Cluster_Table::get_hits(cluster_roll, Weapon_Size_Column::C10);
                 cout << hits << " missiles hit the target" << endl;
-                //add missile group hit logic
-
-
-                return 0; //exit the program while I'm testing missile hits
-            
-            }
-            user_roll = dice_roll();
-            //user_roll = 12; //testing by hard setting hit location to 12
-            std::string hit_location = hit_table_fr[user_roll]; //find the roll on the hit location table
-
-            //check the hit locatin against weapon damage, if armor count goes negative, go to structure
-            cout << "hit location is " << hit_location << " : " << lance[0].ArmorMap[hit_location] << " total armor" << endl; //print where the hit occurred
-            if (lance[0].ArmorMap[hit_location] > weapon_a.dmg) {
-            lance[0].ArmorMap[hit_location] -= weapon_a.dmg; //grab the weapon damage from the weapon class
-            cout << "Remaining armor at " << hit_location << " : " << lance[0].ArmorMap[hit_location] << endl;
-            } else {
-                int remainder = weapon_a.dmg - lance[0].ArmorMap[hit_location];
-                lance[0].StrucMap[hit_location] -= remainder; 
-                lance[0].ArmorMap[hit_location] = 0;
-                cout << "Remaining armor at " << hit_location << " : " << lance[0].ArmorMap[hit_location] << endl;
-                cout << "Remaining struc at " << hit_location << " : " << lance[0].StrucMap[hit_location] << endl;
-                //check for destroyed mech sections, if mech destroyed, continued damage into interior parts
-            if (lance[0].StrucMap[hit_location] <= 0) {
-                if (hit_location == "CT") {
-                    cout << "mech is destroyed" << endl;
-                } else {
-                    cout << hit_location << " is destroyed" << endl;
-                    remainder = lance[0].StrucMap[hit_location]; //new remainder to track damage into interior sections 
+                
+                int c_group = 5; //build a function call here to get it from class
+                int full_groups = hits/c_group;
+                
+                while (full_groups > 0){
+                    temp_dmg = c_group * weapon_a.dmg;
+                    dmg_alloc(hit_table_fr, temp_dmg, lance[0]);
+                    full_groups -= 1;
                 }
+                
+                if (hits % c_group > 0){
+                temp_dmg = (hits % c_group) * weapon_a.dmg; //here we take modulo to get remainder in the last group and directly multiply it by the missile damage
+                dmg_alloc(hit_table_fr, temp_dmg, lance[0]);
+                }
+                
+                return 0;  //hard stop for debugging
+
+            } else {
+                //we checked for missile, we can use listed dmg number for direct fire weapons
+                dmg_alloc(hit_table_fr, weapon_a.dmg, lance[0]);
             }
-            }
+            
+
         } else {
             std::cout << "MISS! GO NEXT" << endl;
         }
