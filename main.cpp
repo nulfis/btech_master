@@ -31,8 +31,6 @@ int attack_calc(){
    
 }
 
-
-
 int main(){
     bool quit = false;
     system("clear");
@@ -109,15 +107,21 @@ int main(){
                 int cluster_roll = dice_roll(); //roll for cluster table lookup
                 int hits = Cluster_Table::get_hits(cluster_roll, Weapon_Size_Column::C4);
                 cout << hits << " missiles hit the target" << endl;
+                user_roll = dice_roll();
+                //user_roll = 12; //testing by hard setting hit location to 12
+                std::string  hit_location= hit_table_fr[user_roll]; //find the roll on the hit location table
+                dmg_alloc(hit_location, weapon_a, lance[0]);
+                
                 return 0; //exit the program while I'm testing missile hits
+
             
             }
             user_roll = dice_roll();
             //user_roll = 12; //testing by hard setting hit location to 12
-            std::string hit_location = hit_table_fr[user_roll]; //find the roll on the hit location table
+            std::string  hit_location= hit_table_fr[user_roll]; //find the roll on the hit location table
 
-            //check the hit locatin against weapon damage, if armor count goes negative, go to structure
-            cout << "hit location is " << hit_location << " : " << lance[0].ArmorMap[hit_location] << " total armor" << endl; //print where the hit occurred
+            //check the hit location against weapon damage, if armor count goes negative, go to structure
+            /*cout << "hit location is " << hit_location << " : " << lance[0].ArmorMap[hit_location] << " total armor" << endl; //print where the hit occurred
             if (lance[0].ArmorMap[hit_location] > weapon_a.dmg) {
             lance[0].ArmorMap[hit_location] -= weapon_a.dmg; //grab the weapon damage from the weapon class
             cout << "Remaining armor at " << hit_location << " : " << lance[0].ArmorMap[hit_location] << endl;
@@ -136,7 +140,7 @@ int main(){
                     remainder = lance[0].StrucMap[hit_location]; //new remainder to track damage into interior sections 
                 }
             }
-            }
+            } */
         } else {
             std::cout << "MISS! GO NEXT" << endl;
         }

@@ -69,6 +69,8 @@ class Weapon { //container for mech weapons
 };
 
 
+void dmg_alloc(std::string hit_location, Weapon weapon, Mech target_mech);
+
 //sqlite3 functions
 sqlite3* openDB(); 
 int callback(void* mech_data, int argc, char** argv, char** azColName);

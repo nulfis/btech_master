@@ -19,7 +19,7 @@ const std::array<std::array<int, (int)Weapon_Size_Column::COUNT> ,11> Cluster_Ta
 
     }};
     
-    //add a hit lookup function
+    //cluster hit lookup function
     int Cluster_Table::get_hits(int roll, Weapon_Size_Column col){
         return data[roll][(int)col];
     };

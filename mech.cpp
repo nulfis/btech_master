@@ -154,7 +154,31 @@ sqlite3* openDB() {
     return db;
 }
 
-//callback function for sqlite3_exec()
+void dmg_alloc(std::string hit_location, Weapon weapon, Mech target_mech){ //damage allocation logic for mech armor and structure
+//check the hit location against weapon damage, if armor count goes negative, go to structure
+    std::cout << "hit location is " << hit_location << " : " << target_mech.ArmorMap[hit_location] << " total armor" << std::endl; //print where the hit occurred
+    if (target_mech.ArmorMap[hit_location] > weapon.dmg) {
+    target_mech.ArmorMap[hit_location] -= weapon.dmg; //grab the weapon damage from the weapon class
+    std::cout << "Remaining armor at " << hit_location << " : " << target_mech.ArmorMap[hit_location] << std::endl;
+    } else {
+        int remainder = weapon.dmg - target_mech.ArmorMap[hit_location];
+        target_mech.StrucMap[hit_location] -= remainder; 
+        target_mech.ArmorMap[hit_location] = 0;
+        std::cout << "Remaining armor at " << hit_location << " : " << target_mech.ArmorMap[hit_location] << std::endl;
+        std::cout << "Remaining struc at " << hit_location << " : " << target_mech.StrucMap[hit_location] << std::endl;
+        //check for destroyed mech sections, is mech destroyed, continued damage into interior parts
+    if (target_mech.StrucMap[hit_location] <= 0) {
+        if (hit_location == "CT") {
+            std::cout << "mech is destroyed" << std::endl;
+        } else {
+            std::cout << hit_location << " is destroyed" << std::endl;
+            remainder = target_mech.StrucMap[hit_location]; //new remainder to track damage into interior sections 
+        }
+    }
+    }
+}
+
+//callback function for sqlite3_exec() THIS CAN BE REMOVED
 int callback(void* mech_data, int argc, char** argv, char** azColName){ //(user spec data type, columns, string array for values in row, col names array)
     std::vector<int>* vec = static_cast<std::vector<int>*>(mech_data);
 
