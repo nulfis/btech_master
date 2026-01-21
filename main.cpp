@@ -109,6 +109,9 @@ int main(){
                 int cluster_roll = dice_roll(); //roll for cluster table lookup
                 int hits = Cluster_Table::get_hits(cluster_roll, Weapon_Size_Column::C4);
                 cout << hits << " missiles hit the target" << endl;
+                //add missile group hit logic
+
+
                 return 0; //exit the program while I'm testing missile hits
             
             }
@@ -127,7 +130,7 @@ int main(){
                 lance[0].ArmorMap[hit_location] = 0;
                 cout << "Remaining armor at " << hit_location << " : " << lance[0].ArmorMap[hit_location] << endl;
                 cout << "Remaining struc at " << hit_location << " : " << lance[0].StrucMap[hit_location] << endl;
-                //check for destroyed mech sections, is mech destroyed, continued damage into interior parts
+                //check for destroyed mech sections, if mech destroyed, continued damage into interior parts
             if (lance[0].StrucMap[hit_location] <= 0) {
                 if (hit_location == "CT") {
                     cout << "mech is destroyed" << endl;
