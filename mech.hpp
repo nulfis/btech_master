@@ -60,6 +60,7 @@ class Weapon { //container for mech weapons
     public:
     std::string dmg_type;
     int grouping;
+    int size; //how many munitions a cluster weapon fires in a single shot
     std::vector<int> weapon_vals;
     void populate_weapon_vals(sqlite3* db, std::string weapon_choice);
     int dmg; //moved to public variable for testing with
@@ -81,9 +82,11 @@ int dice_roll();
 std::map<int, std::string> generate_lookup_table_fr();
 
 //build the cluster hits table
-enum class Weapon_Size_Column { //WS cluster columns
+/* removing enum from the code it's simpler to push cluster size straight into the get hits function
+    enum class Weapon_Size_Column { //WS cluster columns
     C2, C3, C4, C5, C6, C7, C8, C9, C10, C11, C12, C13, C14, C15, C16, C17, C18, 
     C19, C20, C21, C22, C23, C24, C25, C26, C27, C28, C29, C30, C40, COUNT};
+*/
 
 struct Cluster_Table { //see page 33 in rulebook
     
