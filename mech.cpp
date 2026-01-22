@@ -104,14 +104,15 @@ void Weapon::populate_weapon_vals(sqlite3* db, std::string weapon_choice){ //in 
         heat = sqlite3_column_int(stmt, 1);
         dmg = sqlite3_column_int(stmt, 2);
         grouping = sqlite3_column_int(stmt, 3);
-        const unsigned char* dmg_type_raw = sqlite3_column_text(stmt, 4);
+        size = sqlite3_column_int(stmt, 4);
+        const unsigned char* dmg_type_raw = sqlite3_column_text(stmt, 5);
         dmg_type = reinterpret_cast<const char*>(dmg_type_raw);
-        min_range = sqlite3_column_int(stmt, 5);
-        sht_range = sqlite3_column_int(stmt, 6);
-        med_range = sqlite3_column_int(stmt, 7);
-        lng_range = sqlite3_column_int(stmt, 8);
-        crit_slots = sqlite3_column_int(stmt, 9);
-        shots_per_ton = sqlite3_column_int(stmt, 10); 
+        min_range = sqlite3_column_int(stmt, 6);
+        sht_range = sqlite3_column_int(stmt, 7);
+        med_range = sqlite3_column_int(stmt, 8);
+        lng_range = sqlite3_column_int(stmt, 9);
+        crit_slots = sqlite3_column_int(stmt, 10);
+        shots_per_ton = sqlite3_column_int(stmt, 11); 
     } else {
        std::cout << "Your SQL query has an issue" << std::endl;
     }    
