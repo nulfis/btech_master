@@ -108,7 +108,7 @@ int main(){
             if (weapon_a.dmg_type == "MCS"){ //check for missile weapon
                 int temp_dmg{};
                 int cluster_roll = dice_roll(); //roll for cluster table lookup
-                int hits = Cluster_Table::get_hits(cluster_roll, Weapon_Size_Column::C10);
+                int hits = Cluster_Table::get_hits(cluster_roll, weapon_a);
                 cout << hits << " missiles hit the target" << endl;
                 
                 //int c_group = 5; //build a function call here to get it from class

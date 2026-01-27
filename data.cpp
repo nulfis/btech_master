@@ -2,7 +2,23 @@
 #include <map>
 
 
-//CLUSTER TABLE DATA - PG 33 BT Manual
+//New cluster table lookup using std::map
+
+
+const std::map<int, std::vector<int>> Cluster_Table::Cluster_table{
+  //Size  Roll
+  //      2,3,4,5,6,7,8,9,0,1,2   
+    {2,  {1,1,1,1,1,1,2,2,2,2,2}},
+    {4,  {1,2,2,2,2,3,3,3,3,4,4}},
+    {5,  {1,2,2,3,3,3,3,4,4,5,5}},
+    {6,  {2,2,3,3,4,4,4,5,5,6,6}}, 
+    {10, {3,3,4,6,6,6,6,8,8,10,10}},
+    {15, {5,5,6,9,9,9,9,12,12,15,15}},
+    {20, {6,6,9,12,12,12,12,16,16,20,20}}
+
+};
+
+/* //CLUSTER TABLE DATA - PG 33 BT Manual - DEPRECATED 1.27.26
 const std::array<std::array<int, (int)Weapon_Size_Column::COUNT> ,11> Cluster_Table::data {{
     //C2, C4, C10, C40 and so on
     {1,1,1,1,2,2,3,3,3,4,4,4,5,5,5,5,6,6,6,7,7,7,8,8,9,9,9,10,10,12}, //roll 2
@@ -18,11 +34,14 @@ const std::array<std::array<int, (int)Weapon_Size_Column::COUNT> ,11> Cluster_Ta
     {2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,40} //roll 12
 
     }};
-    
+    */
+
     //cluster hit lookup function
-    int Cluster_Table::get_hits(int roll, Weapon_Size_Column col){
-        return data[roll][(int)col];
-    };
+    int Cluster_Table::get_hits(int roll, Weapon weapon){
+        auto key = Cluster_table.find(weapon.size);
+        return key->second[roll -2]; 
+
+    }
 
     //hit lookup table: front/rear
 std::map<int, std::string> generate_lookup_table_fr(){

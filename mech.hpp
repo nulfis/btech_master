@@ -90,9 +90,9 @@ std::map<int, std::string> generate_lookup_table_fr();
 
 struct Cluster_Table { //see page 33 in rulebook
     
-    static const std::array<std::array<int, (int)Weapon_Size_Column::COUNT> ,11> data;
+    static const std::map<int, std::vector<int>> Cluster_table;
     
     //add a hit lookup function
-    static int get_hits(int roll, Weapon_Size_Column col);
+    static int get_hits(int roll, Weapon weapon);
 
 };
