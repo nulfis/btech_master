@@ -54,6 +54,11 @@ void Mech::populate_mech_stats(sqlite3* db, std::string mech_choice){
 
 }
 
+void Mech::print_armorStruc_vals(std::string location){
+    std::cout << "Remaining armor/struc at " << location << " : " << ArmorMap[location] << "|" <<
+    StrucMap[location] << "\n\n";
+}
+
 std::map<std::string, int> Mech::populate_mech_armor(sqlite3* db, std::string mech_choice){ 
     sqlite3_stmt* stmt;
     const char* sql = "SELECT HD, LA, LT, CT, RT, RA, LL, RL, LTR, CTR, RTR FROM armor WHERE id = ? "; //get the armor
@@ -182,8 +187,10 @@ void dmg_alloc(std::map<int, std::string>& hit_table, int weapon_dmg, Mech& targ
         target_mech.ArmorMap[hit_location] = 0;
     }
     //print out the remaining armor/struc after dmg has been applied
-    std::cout << "Remaining armor/struc at " << hit_location << " : " << target_mech.ArmorMap[hit_location] << "|" <<
-    target_mech.StrucMap[hit_location] << "\n\n";
+    target_mech.print_armorStruc_vals(hit_location);
+    
+    //std::cout << "Remaining armor/struc at " << hit_location << " : " << target_mech.ArmorMap[hit_location] << "|" <<
+    //target_mech.StrucMap[hit_location] << "\n\n";
 
     //check for destroyed mech sections, is mech destroyed, continued damage into interior parts
     if (target_mech.StrucMap[hit_location] <= 0) {

@@ -34,6 +34,7 @@ class Mech {
         //get values from the class
         std::string view_base_mech();
         std::string get_mech_name() const; 
+        void print_armorStruc_vals(std::string location);
         //fill in the mech values  
         std::map<std::string, int> populate_mech_armor(sqlite3* db, std::string mech_choice);
         std::map<std::string, int> populate_mech_struc(sqlite3* db, std::string mech_choice);
