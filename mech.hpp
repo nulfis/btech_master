@@ -32,7 +32,8 @@ class Mech {
         //Mech(std::string new_name, int new_walk, int new_run, int new_jump, int new_tonnage, std::string new_tech_base);
 
         //get values from the class
-        std::string view_base_mech(); 
+        std::string view_base_mech();
+        std::string get_mech_name() const; 
         //fill in the mech values  
         std::map<std::string, int> populate_mech_armor(sqlite3* db, std::string mech_choice);
         std::map<std::string, int> populate_mech_struc(sqlite3* db, std::string mech_choice);
@@ -75,18 +76,13 @@ void dmg_alloc(std::map<int, std::string> hit_table, int weapon_dmg, Mech target
 
 //sqlite3 functions
 sqlite3* openDB(); 
-int callback(void* mech_data, int argc, char** argv, char** azColName);
+
 
 //die rolling functions and lookupt tables
 int dice_roll();
 std::map<int, std::string> generate_lookup_table_fr();
 
-//build the cluster hits table
-/* removing enum from the code it's simpler to push cluster size straight into the get hits function
-    enum class Weapon_Size_Column { //WS cluster columns
-    C2, C3, C4, C5, C6, C7, C8, C9, C10, C11, C12, C13, C14, C15, C16, C17, C18, 
-    C19, C20, C21, C22, C23, C24, C25, C26, C27, C28, C29, C30, C40, COUNT};
-*/
+
 
 struct Cluster_Table { //see page 33 in rulebook
     

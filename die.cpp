@@ -2,6 +2,10 @@
 #include <cstdlib>
 #include <ctime>
 #include <map>
+#include "utilities.hpp"
+
+//define some text colors to help with debugging the program
+
 
 int dice_roll(){
 
@@ -17,7 +21,7 @@ int dice_roll(){
 
     //std::cout << "Dice 1: " << roll_1 << std::endl;
     //std::cout << "Dice 2: " << roll_2 << "\n\n";
-    std::cout << "2D6 Total: " << two_d_six << std::endl;
+    //std::cout << Color::YELLOW << "2D6 Total: " << two_d_six << Color::RESET << "\n\n";
 
     return two_d_six;
 

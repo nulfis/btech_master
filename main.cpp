@@ -1,5 +1,6 @@
 #include <iostream>
 #include "mech.hpp"
+#include "utilities.hpp"
 #include <stdlib.h>
 #include <vector>
 #include <tuple>
@@ -25,7 +26,7 @@ int attack_calc(){
    std::cin >> gunnery >> attack_mod >> target_mod >> other_mod >> range;
    attack_sum = gunnery + attack_mod + target_mod + other_mod + range; */ // removed while testing weapon hits 1.19.26
    attack_sum = 4;
-   std::cout << "Your targer number modifier is: " << attack_sum << "\n\n";
+   //std::cout << "Your targer number modifier is: " << attack_sum << "\n\n";
     return attack_sum; 
 
    
@@ -36,10 +37,12 @@ int main(){
     bool quit = false;
     system("clear");
     system("color 09");
+
+
     
     //do some introductory text
     //system("color 0A");
-    std::cout << "\n" << "WELCOME TO THE BATTLETECH FIELD COMPUTER \n\n";
+    std::cout << "\n" << "WELCOME TO THE BATTLETECH FIELD COMPUTER \n" ;
     
     //-----------------------------------------------------------
     //cout << "INPUT MECH TO LOAD. USE MECH VARIANT NUMBER" << endl;
@@ -50,7 +53,7 @@ int main(){
     //cout << "Load one more mech please so they can fight each other!" << endl;
     //cin >> mech_choice;
     //lance_choices.push_back(mech_choice);
-    cout << "Mech A: " << lance_choices[0] << " & Mech B: " << lance_choices[1] << endl;
+    //cout << "Mech A: " << lance_choices[0] << " & Mech B: " << lance_choices[1] << endl;
 
     
     
@@ -67,7 +70,7 @@ int main(){
         temp_mech.populate_mech_struc(odb, mech); // get mech structure values
         temp_mech.get_mech_equipment(odb, mech); // get mech equipment (weapons and other)
 
-        temp_mech.view_base_mech(); //print out some basic mech stats for debugging and user information
+        std::cout << Color::GREEN <<  temp_mech.view_base_mech() << Color::RESET; //print out some basic mech stats for debugging and user information
         
         //push back into Mech vector
         lance.push_back(temp_mech);
@@ -81,10 +84,10 @@ int main(){
     std::string weapon_choice;
     //cout << "what weapon are you shooting?" << endl;
     //cin >> weapon_choice; 
-    weapon_choice = "LRM10"; //hardcoded selection here for testing purposes, commented out two lines above
-    cout << "populating weapon values for user selection" << endl;
+    weapon_choice = "AC10"; //hardcoded selection here for testing purposes, commented out two lines above
+    //cout << "populating weapon values for user selection" << endl;
     weapon_a.populate_weapon_vals(odb, weapon_choice); //currently hard coded for PPC lookup
-    weapon_a.debug_weapon_vals(); //prints all the values except crit slots and shots per ton
+    //weapon_a.debug_weapon_vals(); //prints all the values except crit slots and shots per ton
     
     //build the front hit table
     std::map<int, std::string> hit_table_fr = generate_lookup_table_fr();  //generate the hit location table
@@ -97,21 +100,25 @@ int main(){
         char user_input;
 
         
-        cout << "rolling dice for player \n";
+        cout << "\n";
+        cout << Color::MAGENTA << "BEGIN COMBAT TURN: " << Color::RESET << "\n";
+        cout << Color::YELLOW << "Rolling dice TO HIT --> ";
         int to_hit_roll = dice_roll(); //roll the dice
+        cout << to_hit_roll << Color::RESET << "\n\n";
         int to_hit = attack_calc(); //sum the gator vals to determine to hit number
         
         //check if you hit or miss 
         if (to_hit_roll >= to_hit) {
-            std::cout << "HIT!" << endl;
-            cout << "Rolling to determine hit location" << endl;
+            std::cout << Color::RED << "HIT! -> ";
+            
             if (weapon_a.dmg_type == "MCS"){ //check for missile weapon
                 int temp_dmg{};
                 int cluster_roll = dice_roll(); //roll for cluster table lookup
                 int hits = Cluster_Table::get_hits(cluster_roll, weapon_a);
-                cout << hits << " missiles hit the target" << endl;
                 
-                //int c_group = 5; //build a function call here to get it from class
+                std::cout << "Rolling to determine cluster roll: " << cluster_roll << "\n";
+                std::cout << hits << " missiles hit the target" << Color::RESET << "\n\n";
+                
                 int full_groups = hits / weapon_a.grouping;
                 
                 while (full_groups > 0){
@@ -129,6 +136,7 @@ int main(){
 
             } else {
                 //we checked for missile, we can use listed dmg number for direct fire weapons
+                std::cout << "Direct Damage" << Color::RESET << "\n\n";
                 dmg_alloc(hit_table_fr, weapon_a.dmg, lance[0]);
             }
             

@@ -3,6 +3,7 @@
 #include <vector>
 #include <map>
 #include "mech.hpp"
+#include "utilities.hpp"
 #include "sqlite3.h"
 
 //removed mech constructor 1/13/26 - not needed for right now
@@ -15,6 +16,8 @@
         tech_base = new_tech_base;
  }*/
 
+
+
 void Mech::populate_mech_stats(sqlite3* db, std::string mech_choice){
     sqlite3_stmt* stmt;
     const char* sql = "SELECT id, name, tonnage, walk, run, jump FROM mech WHERE id = ? ";
@@ -24,7 +27,7 @@ void Mech::populate_mech_stats(sqlite3* db, std::string mech_choice){
    if (rc == SQLITE_ROW){
         //const unsigned char* mech_raw = sqlite3_column_text(stmt, 1);
         //const char* mech_selected = reinterpret_cast<const char*>(mech_raw); //convert mech selected to c text
-        std::cout << "Mech found - populating mech values from data sheet" << std::endl;
+        //std::cout << "Mech found - populating mech values from data sheet" << std::endl;
         //if the mech is found, create a MECH_A object
         const unsigned char* name_raw = sqlite3_column_text(stmt, 1);
         name = reinterpret_cast<const char*>(name_raw);
@@ -36,6 +39,10 @@ void Mech::populate_mech_stats(sqlite3* db, std::string mech_choice){
     std::cerr << "No mech by that ID found, or there is another error." << std::endl;
    }
 }
+
+ std::string Mech::get_mech_name() const {
+    return name; //print the mech's name
+ }
 
  std::string Mech::view_base_mech() {
           std::vector<std::string> mech_base;
@@ -136,7 +143,7 @@ void Mech::get_mech_equipment(sqlite3* db, std::string mech_choice){
         weapon_1 = reinterpret_cast<const char*>(weapon_raw);
         weapon_raw = sqlite3_column_text(stmt, 2);
         weapon_2 = reinterpret_cast<const char*>(weapon_raw);
-        std::cout << weapon_1 << " | " << weapon_2 << std::endl;
+        //std::cout << weapon_1 << " | " << weapon_2 << std::endl;
    } else {
     std::cout << "your sql is fucked bro" << std::endl;
    }
@@ -156,48 +163,39 @@ sqlite3* openDB() {
     return db;
 }
 
-
-
 void dmg_alloc(std::map<int, std::string> hit_table, int weapon_dmg, Mech target_mech){ //damage allocation logic for mech armor and structure
-//check the hit location against weapon damage, if armor count goes negative, go to structure
+//check the hit location against weapon damage, if armor count goes negative, go to structure, if structure goes negative dmg goes inward to next module
+    int remainder; 
     int roll_result = dice_roll();
     std::string  hit_location= hit_table[roll_result]; //find the roll on the hit location table
 
-    std::cout << "hit location is " << hit_location << " : " << target_mech.ArmorMap[hit_location] << " total armor" << 
-    " | Wpn Dmg:" << weapon_dmg << std::endl; //print where the hit occurred and the damage to be done
+    std::cout << Color::CYAN_B << "Applying Hit(s)" << Color::RESET << "\n";
+    std::cout << Color::GREEN << "Hit location: " << target_mech.get_mech_name()  << "-> " << hit_location;
+    std::cout << " - Current armor/struc: " << target_mech.ArmorMap[hit_location] << "|" << target_mech.StrucMap[hit_location]; 
+    std::cout << " - Wpn Dmg: " << weapon_dmg << std::endl; //print where the hit occurred and the damage to be done
     
     if (target_mech.ArmorMap[hit_location] > weapon_dmg) {
     target_mech.ArmorMap[hit_location] -= weapon_dmg; //grab the weapon damage from the weapon class
-    std::cout << "Remaining armor at " << hit_location << " : " << target_mech.ArmorMap[hit_location] << std::endl;
     } else {
-        int remainder = weapon_dmg - target_mech.ArmorMap[hit_location];
+        remainder = weapon_dmg - target_mech.ArmorMap[hit_location];
         target_mech.StrucMap[hit_location] -= remainder; 
         target_mech.ArmorMap[hit_location] = 0;
-        std::cout << "Remaining armor at " << hit_location << " : " << target_mech.ArmorMap[hit_location] << std::endl;
-        std::cout << "Remaining struc at " << hit_location << " : " << target_mech.StrucMap[hit_location] << std::endl;
-        //check for destroyed mech sections, is mech destroyed, continued damage into interior parts
+    }
+    //print out the remaining armor/struc after dmg has been applied
+    std::cout << "Remaining armor/struc at " << hit_location << " : " << target_mech.ArmorMap[hit_location] << "|" <<
+    target_mech.StrucMap[hit_location] << "\n\n";
+
+    //check for destroyed mech sections, is mech destroyed, continued damage into interior parts
     if (target_mech.StrucMap[hit_location] <= 0) {
-        if (hit_location == "CT") {
-            std::cout << "mech is destroyed" << std::endl;
+    if (hit_location == "CT") {
+        std::cout << Color::RED << "Mech is destroyed" << Color::RESET << std::endl;
         } else {
-            std::cout << hit_location << " is destroyed" << std::endl;
-            remainder = target_mech.StrucMap[hit_location]; //new remainder to track damage into interior sections 
+        std::cout << Color::RED <<  hit_location << " is destroyed" << Color::RESET << std::endl;
+        remainder = target_mech.StrucMap[hit_location]; //new remainder to track damage into interior sections 
         }
-    }
-    }
+    }   
 }
 
-//callback function for sqlite3_exec() THIS CAN BE REMOVED
-int callback(void* mech_data, int argc, char** argv, char** azColName){ //(user spec data type, columns, string array for values in row, col names array)
-    std::vector<int>* vec = static_cast<std::vector<int>*>(mech_data);
-
-    //loop through each value we want in the row we want
-    for (int i = 0; i < argc; i++) {
-        int value = std::stoi(argv[i]); //get the string value from the table and convert it to an integer
-        vec->push_back(value);  //add the integer to the vector - no column names though
-    } 
-    return 0;
-}
 
 
 
