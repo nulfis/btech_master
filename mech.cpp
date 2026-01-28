@@ -163,8 +163,8 @@ sqlite3* openDB() {
     return db;
 }
 
-void dmg_alloc(std::map<int, std::string> hit_table, int weapon_dmg, Mech target_mech){ //damage allocation logic for mech armor and structure
-//check the hit location against weapon damage, if armor count goes negative, go to structure, if structure goes negative dmg goes inward to next module
+void dmg_alloc(std::map<int, std::string>& hit_table, int weapon_dmg, Mech& target_mech){ //damage allocation logic for mech armor and structure
+    //check the hit location against weapon damage, if armor count goes negative, go to structure, if structure goes negative dmg goes inward to next module
     int remainder; 
     int roll_result = dice_roll();
     std::string  hit_location= hit_table[roll_result]; //find the roll on the hit location table
@@ -175,7 +175,7 @@ void dmg_alloc(std::map<int, std::string> hit_table, int weapon_dmg, Mech target
     std::cout << " - Wpn Dmg: " << weapon_dmg << std::endl; //print where the hit occurred and the damage to be done
     
     if (target_mech.ArmorMap[hit_location] > weapon_dmg) {
-    target_mech.ArmorMap[hit_location] -= weapon_dmg; //grab the weapon damage from the weapon class
+        target_mech.ArmorMap[hit_location] -= weapon_dmg; //grab the weapon damage from the weapon class
     } else {
         remainder = weapon_dmg - target_mech.ArmorMap[hit_location];
         target_mech.StrucMap[hit_location] -= remainder; 

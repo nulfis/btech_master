@@ -72,7 +72,7 @@ class Weapon { //container for mech weapons
 };
 
 
-void dmg_alloc(std::map<int, std::string> hit_table, int weapon_dmg, Mech target_mech);
+void dmg_alloc(std::map<int, std::string>& hit_table, int weapon_dmg, Mech& target_mech);
 
 //sqlite3 functions
 sqlite3* openDB(); 
