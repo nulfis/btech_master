@@ -84,7 +84,7 @@ int main(){
     std::string weapon_choice;
     //cout << "what weapon are you shooting?" << endl;
     //cin >> weapon_choice; 
-    weapon_choice = "AC10"; //hardcoded selection here for testing purposes, commented out two lines above
+    weapon_choice = "AC5"; //hardcoded selection here for testing purposes, commented out two lines above
     //cout << "populating weapon values for user selection" << endl;
     weapon_a.populate_weapon_vals(odb, weapon_choice); //currently hard coded for PPC lookup
     //weapon_a.debug_weapon_vals(); //prints all the values except crit slots and shots per ton

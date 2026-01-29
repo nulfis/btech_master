@@ -55,8 +55,8 @@ void Mech::populate_mech_stats(sqlite3* db, std::string mech_choice){
 }
 
 void Mech::print_armorStruc_vals(std::string location){
-    std::cout << "Remaining armor/struc at " << location << " : " << ArmorMap[location] << "|" <<
-    StrucMap[location] << "\n\n";
+    std::cout << "Armor/Structure at " << location << " : " << ArmorMap[location] << "|" <<
+    StrucMap[location] << "\n";
 }
 
 std::map<std::string, int> Mech::populate_mech_armor(sqlite3* db, std::string mech_choice){ 
@@ -175,9 +175,10 @@ void dmg_alloc(std::map<int, std::string>& hit_table, int weapon_dmg, Mech& targ
     std::string  hit_location= hit_table[roll_result]; //find the roll on the hit location table
 
     std::cout << Color::CYAN_B << "Applying Hit(s)" << Color::RESET << "\n";
-    std::cout << Color::GREEN << "Hit location: " << target_mech.get_mech_name()  << "-> " << hit_location;
-    std::cout << " - Current armor/struc: " << target_mech.ArmorMap[hit_location] << "|" << target_mech.StrucMap[hit_location]; 
-    std::cout << " - Wpn Dmg: " << weapon_dmg << std::endl; //print where the hit occurred and the damage to be done
+    std::cout << Color::GREEN << "Hit location: " << target_mech.get_mech_name()  << "-> " << hit_location << "-> ";
+    target_mech.print_armorStruc_vals(hit_location);
+    std::cout << Color::RED << "Wpn Dmg: " << weapon_dmg << "->" << Color::GREEN << " "; //print where the hit occurred and the damage to be done
+    
     
     if (target_mech.ArmorMap[hit_location] > weapon_dmg) {
         target_mech.ArmorMap[hit_location] -= weapon_dmg; //grab the weapon damage from the weapon class
@@ -186,8 +187,11 @@ void dmg_alloc(std::map<int, std::string>& hit_table, int weapon_dmg, Mech& targ
         target_mech.StrucMap[hit_location] -= remainder; 
         target_mech.ArmorMap[hit_location] = 0;
     }
+ 
+
     //print out the remaining armor/struc after dmg has been applied
     target_mech.print_armorStruc_vals(hit_location);
+    std::cout << "\n";
     
     //std::cout << "Remaining armor/struc at " << hit_location << " : " << target_mech.ArmorMap[hit_location] << "|" <<
     //target_mech.StrucMap[hit_location] << "\n\n";
