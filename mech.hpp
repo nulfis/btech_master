@@ -72,8 +72,9 @@ class Weapon { //container for mech weapons
 
 };
 
+std::string get_hit_location(std::map<int, std::string>& hit_table);
 
-void dmg_alloc(std::map<int, std::string>& hit_table, int weapon_dmg, Mech& target_mech);
+void dmg_alloc(std::string hit_location, int weapon_dmg, Mech& target_mech, std::map<std::string, std::string> transfer);
 
 //sqlite3 functions
 sqlite3* openDB(); 
@@ -92,4 +93,13 @@ struct Cluster_Table { //see page 33 in rulebook
     //add a hit lookup function
     static int get_hits(int roll, Weapon weapon);
 
+};
+
+static const std::map<std::string, std::string> dmg_transfer_map = { //map containting the direction over dmg does to the next internal part
+    {"LA", "LT"},
+    {"LT", "CT"},
+    {"RA", "RT"},
+    {"RT", "CT"},
+    {"LL", "LT"},
+    {"RL", "RT"}
 };

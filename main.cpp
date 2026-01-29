@@ -84,7 +84,7 @@ int main(){
     std::string weapon_choice;
     //cout << "what weapon are you shooting?" << endl;
     //cin >> weapon_choice; 
-    weapon_choice = "AC5"; //hardcoded selection here for testing purposes, commented out two lines above
+    weapon_choice = "AC20"; //hardcoded selection here for testing purposes, commented out two lines above
     //cout << "populating weapon values for user selection" << endl;
     weapon_a.populate_weapon_vals(odb, weapon_choice); //currently hard coded for PPC lookup
     //weapon_a.debug_weapon_vals(); //prints all the values except crit slots and shots per ton
@@ -97,6 +97,7 @@ int main(){
 //notes to self 1/12/26 -
     //the mech shoots itself right now with the weapon chosen. Once I add multiple mech tracking this needs to switch over.
     while (quit != true) {
+        std::string hit_location = "";
         char user_input;
 
         
@@ -123,13 +124,15 @@ int main(){
                 
                 while (full_groups > 0){
                     temp_dmg = weapon_a.grouping * weapon_a.dmg;
-                    dmg_alloc(hit_table_fr, temp_dmg, lance[0]);
+                    hit_location = get_hit_location(hit_table_fr);
+                    dmg_alloc(hit_location, temp_dmg, lance[0], dmg_transfer_map);
                     full_groups -= 1;
                 }
                 
                 if (hits % weapon_a.grouping > 0){
-                temp_dmg = (hits % weapon_a.grouping) * weapon_a.dmg; //here we take modulo to get remainder in the last group and directly multiply it by the missile damage
-                dmg_alloc(hit_table_fr, temp_dmg, lance[0]);
+                    temp_dmg = (hits % weapon_a.grouping) * weapon_a.dmg; //here we take modulo to get remainder in the last group and directly multiply it by the missile damage
+                    hit_location = get_hit_location(hit_table_fr);
+                    dmg_alloc(hit_location, temp_dmg, lance[0], dmg_transfer_map);
                 }
                 
                 return 0;  //hard stop for debugging
@@ -137,7 +140,8 @@ int main(){
             } else {
                 //we checked for missile, we can use listed dmg number for direct fire weapons
                 std::cout << "Direct Damage" << Color::RESET << "\n\n";
-                dmg_alloc(hit_table_fr, weapon_a.dmg, lance[0]);
+                hit_location = get_hit_location(hit_table_fr);
+                dmg_alloc(hit_location, weapon_a.dmg, lance[0], dmg_transfer_map);
             }
             
 

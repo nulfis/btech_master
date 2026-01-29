@@ -168,44 +168,70 @@ sqlite3* openDB() {
     return db;
 }
 
-void dmg_alloc(std::map<int, std::string>& hit_table, int weapon_dmg, Mech& target_mech){ //damage allocation logic for mech armor and structure
-    //check the hit location against weapon damage, if armor count goes negative, go to structure, if structure goes negative dmg goes inward to next module
-    int remainder; 
+std::string get_hit_location(std::map<int, std::string>& hit_table){
     int roll_result = dice_roll();
     std::string  hit_location= hit_table[roll_result]; //find the roll on the hit location table
+    return hit_location;
+}
 
+void dmg_alloc(std::string location, int weapon_dmg, Mech& target_mech, std::map<std::string, std::string> transfer){ //damage allocation logic for mech armor and structure
+    //check the hit location against weapon damage, if armor count goes negative, go to structure, if structure goes negative dmg goes inward to next module 
+    int remainder;
+    
+    //infinite loop check for recursion
+    if (weapon_dmg <= 0 || location == "") return;
+
+    //debug console output
     std::cout << Color::CYAN_B << "Applying Hit(s)" << Color::RESET << "\n";
-    std::cout << Color::GREEN << "Hit location: " << target_mech.get_mech_name()  << "-> " << hit_location << "-> ";
-    target_mech.print_armorStruc_vals(hit_location);
+    std::cout << Color::GREEN << "Hit location: " << target_mech.get_mech_name()  << "-> " << location << "-> ";
+    target_mech.print_armorStruc_vals(location);
     std::cout << Color::RED << "Wpn Dmg: " << weapon_dmg << "->" << Color::GREEN << " "; //print where the hit occurred and the damage to be done
     
+    //Phase 1 - apply hits to armor
+    if (target_mech.ArmorMap[location] > weapon_dmg) {
+        target_mech.ArmorMap[location] -= weapon_dmg; //grab the weapon damage from the weapon class
+        return;
+    } 
     
-    if (target_mech.ArmorMap[hit_location] > weapon_dmg) {
-        target_mech.ArmorMap[hit_location] -= weapon_dmg; //grab the weapon damage from the weapon class
-    } else {
-        remainder = weapon_dmg - target_mech.ArmorMap[hit_location];
-        target_mech.StrucMap[hit_location] -= remainder; 
-        target_mech.ArmorMap[hit_location] = 0;
+    //Phase 2 - apply remaning damage to structure
+    remainder = weapon_dmg - target_mech.ArmorMap[location];
+    target_mech.ArmorMap[location] = 0;
+    target_mech.StrucMap[location] -= remainder; 
+    
+    //debug console output the remaining armor/struc after dmg has been applied
+    target_mech.print_armorStruc_vals(location);
+    std::cout << "\n";
+
+    //Phase 3 - check for location destruction/mech destroyed conditions
+    if (target_mech.StrucMap[location] <= 0) { //you have overage
+        remainder = std::abs(target_mech.StrucMap[location]);
+        target_mech.StrucMap[location] = 0;
+
+        std::cout << Color::RED <<  location << " is destroyed, remainder Dmg: " << remainder << Color::RESET << "\n\n";
+
+        //any other parts fall off along with the destroyed location?
+        if(location == "LT" & target_mech.StrucMap["LA"] > 0) {
+            target_mech.ArmorMap["LT"]; target_mech.StrucMap["LT"] = 0;  //destroy the outward arm
+            std::cout << Color::RED << "Left arm is destroyed" << Color::RESET << "\n\n"; } 
+        if(location == "RT" & target_mech.StrucMap["RA"] > 0) {
+            target_mech.ArmorMap["RT"]; target_mech.StrucMap["RT"] = 0; //destroy the outward arm
+            std::cout << Color::RED << "Right arm destroyed" << Color::RESET << "\n\n"; } 
+        if (location == "CT") {
+            target_mech.StrucMap["CT"] = 0;
+            std::cout << Color::RED << "Mech is destroyed" << Color::RESET << "\n\n";
+            return;
+        }
+      
+        //Recursion time: check transfer direction and run function again
+        std::string transfer_loc = transfer[location];
+        dmg_alloc(transfer_loc, remainder, target_mech, transfer);
+        
     }
+
+ 
+}
  
 
-    //print out the remaining armor/struc after dmg has been applied
-    target_mech.print_armorStruc_vals(hit_location);
-    std::cout << "\n";
-    
-    //std::cout << "Remaining armor/struc at " << hit_location << " : " << target_mech.ArmorMap[hit_location] << "|" <<
-    //target_mech.StrucMap[hit_location] << "\n\n";
-
-    //check for destroyed mech sections, is mech destroyed, continued damage into interior parts
-    if (target_mech.StrucMap[hit_location] <= 0) {
-    if (hit_location == "CT") {
-        std::cout << Color::RED << "Mech is destroyed" << Color::RESET << std::endl;
-        } else {
-        std::cout << Color::RED <<  hit_location << " is destroyed" << Color::RESET << std::endl;
-        remainder = target_mech.StrucMap[hit_location]; //new remainder to track damage into interior sections 
-        }
-    }   
-}
 
 
 
