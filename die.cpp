@@ -2,9 +2,15 @@
 #include <cstdlib>
 #include <ctime>
 #include <map>
+#include "mech.hpp"
 #include "utilities.hpp"
 
+
 //define some text colors to help with debugging the program
+
+
+Dice::Dice()
+    : gen(std::random_device{}()), d6(1,6) {} //seeding our random number to a d6 normal distribution
 
 
 int dice_roll(){
@@ -25,5 +31,10 @@ int dice_roll(){
 
     return two_d_six;
 
+}
+
+int Dice::one_d_six() { //simple 1d6roll
+    return d6(gen);
+    
 }
 

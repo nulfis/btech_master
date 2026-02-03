@@ -2,6 +2,7 @@
 #include <map>
 #include <vector>
 #include "sqlite3.h"
+#include <random>
 
 
 
@@ -72,9 +73,24 @@ class Weapon { //container for mech weapons
 
 };
 
+class Dice {//container for the random number engine and dice rolling functions.
+    private:
+        std::mt19937 gen;
+        std::uniform_int_distribution<int> d6;
+
+    public:
+        Dice();
+        int dice_roll();
+        int one_d_six();
+
+
+
+};
+
 std::string get_hit_location(std::map<int, std::string>& hit_table);
 
 void dmg_alloc(std::string hit_location, int weapon_dmg, Mech& target_mech, std::map<std::string, std::string> transfer);
+void crit_alloc(int crit_hits, std::string location, Mech& mech, Dice dice);
 
 //sqlite3 functions
 sqlite3* openDB(); 

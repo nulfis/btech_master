@@ -37,6 +37,7 @@ int main(){
     bool quit = false;
     system("clear");
     system("color 09");
+    Dice dice; //initialize the random dice engine class
 
 
     
@@ -55,7 +56,24 @@ int main(){
     //lance_choices.push_back(mech_choice);
     //cout << "Mech A: " << lance_choices[0] << " & Mech B: " << lance_choices[1] << endl;
 
-    
+    //test some of the new dice rolls
+   int dice_test = dice.one_d_six();
+   std::cout << "This is your 1d6 roll for test " << dice_test << "\n";
+   dice_test = dice.one_d_six();
+   std::cout << "This is your 1d6 roll for test " << dice_test << "\n";
+   dice_test = dice.one_d_six();
+   std::cout << "This is your 1d6 roll for test " << dice_test << "\n";
+   dice_test = dice.one_d_six();
+   std::cout << "This is your 1d6 roll for test " << dice_test << "\n";
+   dice_test = dice.one_d_six();
+   std::cout << "This is your 1d6 roll for test " << dice_test << "\n";
+   dice_test = dice.one_d_six();
+   std::cout << "This is your 1d6 roll for test " << dice_test << "\n";
+   
+
+
+
+
     
 
     //open the database

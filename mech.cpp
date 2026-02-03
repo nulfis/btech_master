@@ -177,6 +177,8 @@ std::string get_hit_location(std::map<int, std::string>& hit_table){
 void dmg_alloc(std::string location, int weapon_dmg, Mech& target_mech, std::map<std::string, std::string> transfer){ //damage allocation logic for mech armor and structure
     //check the hit location against weapon damage, if armor count goes negative, go to structure, if structure goes negative dmg goes inward to next module 
     int remainder;
+    int crit_hits {}; //initialize to zero
+    int roll_result; 
     
     //infinite loop check for recursion
     if (weapon_dmg <= 0 || location == "") return;
@@ -198,6 +200,16 @@ void dmg_alloc(std::string location, int weapon_dmg, Mech& target_mech, std::map
     target_mech.ArmorMap[location] = 0;
     target_mech.StrucMap[location] -= remainder; 
     
+    //crit check required
+    roll_result = dice_roll(); //roll for crit hits table pg. 46
+    if(roll_result > 7 & roll_result < 10) {
+       crit_hits = 1; 
+    } else if (roll_result > 9 & roll_result < 12){
+        crit_hits = 2;
+    } else {
+        crit_hits = 3; //roll of 12 destroys limbs/head, or applies 3 crit hits
+    }
+
     //debug console output the remaining armor/struc after dmg has been applied
     target_mech.print_armorStruc_vals(location);
     std::cout << "\n";
@@ -232,7 +244,16 @@ void dmg_alloc(std::string location, int weapon_dmg, Mech& target_mech, std::map
 }
  
 
+void crit_alloc(int crit_hits, std::string location, Mech& mech, Dice dice){
+    //determination of critical hits on a given mechs crit slot table.
 
+    //phase 1: roll for slot location
+    int roll_result = dice.one_d_six();\
+    std::cout << "This is your 1d6 output " << roll_result << "\n";
+    std::cout << "This is your 1d6 output " << roll_result << "\n";
+    std::cout << "This is your 1d6 output " << roll_result << "\n";
+
+}
 
 
 
