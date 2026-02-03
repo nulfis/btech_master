@@ -82,14 +82,14 @@ class Dice {//container for the random number engine and dice rolling functions.
         Dice();
         int dice_roll();
         int one_d_six();
-
+        int two_d_six();
 
 
 };
 
-std::string get_hit_location(std::map<int, std::string>& hit_table);
+std::string get_hit_location(std::map<int, std::string>& hit_table, Dice dice);
 
-void dmg_alloc(std::string hit_location, int weapon_dmg, Mech& target_mech, std::map<std::string, std::string> transfer);
+void dmg_alloc(std::string hit_location, int weapon_dmg, Mech& target_mech, std::map<std::string, std::string> transfer, Dice dice);
 void crit_alloc(int crit_hits, std::string location, Mech& mech, Dice dice);
 
 //sqlite3 functions

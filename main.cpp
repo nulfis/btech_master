@@ -55,27 +55,7 @@ int main(){
     //cin >> mech_choice;
     //lance_choices.push_back(mech_choice);
     //cout << "Mech A: " << lance_choices[0] << " & Mech B: " << lance_choices[1] << endl;
-
-    //test some of the new dice rolls
-   int dice_test = dice.one_d_six();
-   std::cout << "This is your 1d6 roll for test " << dice_test << "\n";
-   dice_test = dice.one_d_six();
-   std::cout << "This is your 1d6 roll for test " << dice_test << "\n";
-   dice_test = dice.one_d_six();
-   std::cout << "This is your 1d6 roll for test " << dice_test << "\n";
-   dice_test = dice.one_d_six();
-   std::cout << "This is your 1d6 roll for test " << dice_test << "\n";
-   dice_test = dice.one_d_six();
-   std::cout << "This is your 1d6 roll for test " << dice_test << "\n";
-   dice_test = dice.one_d_six();
-   std::cout << "This is your 1d6 roll for test " << dice_test << "\n";
-   
-
-
-
-
     
-
     //open the database
     sqlite3* odb = openDB();
 
@@ -122,7 +102,7 @@ int main(){
         cout << "\n";
         cout << Color::MAGENTA << "BEGIN COMBAT TURN: " << Color::RESET << "\n";
         cout << Color::YELLOW << "Rolling dice TO HIT --> ";
-        int to_hit_roll = dice_roll(); //roll the dice
+        int to_hit_roll = dice.two_d_six(); //roll the dice
         cout << to_hit_roll << Color::RESET << "\n\n";
         int to_hit = attack_calc(); //sum the gator vals to determine to hit number
         
@@ -132,7 +112,7 @@ int main(){
             
             if (weapon_a.dmg_type == "MCS"){ //check for missile weapon
                 int temp_dmg{};
-                int cluster_roll = dice_roll(); //roll for cluster table lookup
+                int cluster_roll = dice.two_d_six(); //roll for cluster table lookup
                 int hits = Cluster_Table::get_hits(cluster_roll, weapon_a);
                 
                 std::cout << "Rolling to determine cluster roll: " << cluster_roll << "\n";
@@ -142,15 +122,15 @@ int main(){
                 
                 while (full_groups > 0){
                     temp_dmg = weapon_a.grouping * weapon_a.dmg;
-                    hit_location = get_hit_location(hit_table_fr);
-                    dmg_alloc(hit_location, temp_dmg, lance[0], dmg_transfer_map);
+                    hit_location = get_hit_location(hit_table_fr, dice);
+                    dmg_alloc(hit_location, temp_dmg, lance[0], dmg_transfer_map, dice);
                     full_groups -= 1;
                 }
                 
                 if (hits % weapon_a.grouping > 0){
                     temp_dmg = (hits % weapon_a.grouping) * weapon_a.dmg; //here we take modulo to get remainder in the last group and directly multiply it by the missile damage
-                    hit_location = get_hit_location(hit_table_fr);
-                    dmg_alloc(hit_location, temp_dmg, lance[0], dmg_transfer_map);
+                    hit_location = get_hit_location(hit_table_fr, dice);
+                    dmg_alloc(hit_location, temp_dmg, lance[0], dmg_transfer_map, dice);
                 }
                 
                 return 0;  //hard stop for debugging
@@ -158,8 +138,8 @@ int main(){
             } else {
                 //we checked for missile, we can use listed dmg number for direct fire weapons
                 std::cout << "Direct Damage" << Color::RESET << "\n\n";
-                hit_location = get_hit_location(hit_table_fr);
-                dmg_alloc(hit_location, weapon_a.dmg, lance[0], dmg_transfer_map);
+                hit_location = get_hit_location(hit_table_fr, dice);
+                dmg_alloc(hit_location, weapon_a.dmg, lance[0], dmg_transfer_map, dice);
             }
             
 

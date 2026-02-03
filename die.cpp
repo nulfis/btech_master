@@ -13,7 +13,7 @@ Dice::Dice()
     : gen(std::random_device{}()), d6(1,6) {} //seeding our random number to a d6 normal distribution
 
 
-int dice_roll(){
+/*int dice_roll(){ //deprecated 2.3.26
 
     
 
@@ -31,10 +31,15 @@ int dice_roll(){
 
     return two_d_six;
 
-}
+} */
 
 int Dice::one_d_six() { //simple 1d6roll
     return d6(gen);
     
 }
+
+int Dice::two_d_six(){
+    return d6(gen) + d6(gen);
+}
+
 

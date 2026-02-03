@@ -168,13 +168,13 @@ sqlite3* openDB() {
     return db;
 }
 
-std::string get_hit_location(std::map<int, std::string>& hit_table){
-    int roll_result = dice_roll();
+std::string get_hit_location(std::map<int, std::string>& hit_table, Dice dice){
+    int roll_result = dice.two_d_six();
     std::string  hit_location= hit_table[roll_result]; //find the roll on the hit location table
     return hit_location;
 }
 
-void dmg_alloc(std::string location, int weapon_dmg, Mech& target_mech, std::map<std::string, std::string> transfer){ //damage allocation logic for mech armor and structure
+void dmg_alloc(std::string location, int weapon_dmg, Mech& target_mech, std::map<std::string, std::string> transfer, Dice dice){ //damage allocation logic for mech armor and structure
     //check the hit location against weapon damage, if armor count goes negative, go to structure, if structure goes negative dmg goes inward to next module 
     int remainder;
     int crit_hits {}; //initialize to zero
@@ -201,7 +201,7 @@ void dmg_alloc(std::string location, int weapon_dmg, Mech& target_mech, std::map
     target_mech.StrucMap[location] -= remainder; 
     
     //crit check required
-    roll_result = dice_roll(); //roll for crit hits table pg. 46
+    roll_result = dice.two_d_six(); //roll for crit hits table pg. 46
     if(roll_result > 7 & roll_result < 10) {
        crit_hits = 1; 
     } else if (roll_result > 9 & roll_result < 12){
@@ -236,7 +236,7 @@ void dmg_alloc(std::string location, int weapon_dmg, Mech& target_mech, std::map
       
         //Recursion time: check transfer direction and run function again
         std::string transfer_loc = transfer[location];
-        dmg_alloc(transfer_loc, remainder, target_mech, transfer);
+        dmg_alloc(transfer_loc, remainder, target_mech, transfer, dice);
         
     }
 
